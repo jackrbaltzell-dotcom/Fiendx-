@@ -1,6 +1,7 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import fs from 'fs';
 import {defineConfig, Plugin} from 'vite';
 import {handleGeminiApi} from './server/geminiHandler.ts';
 
@@ -19,12 +20,31 @@ function geminiApiPlugin(): Plugin {
   };
 }
 
+function spaFallbackPlugin(): Plugin {
+  return {
+    name: 'spa-fallback-plugin',
+    closeBundle() {
+      try {
+        const distDir = path.resolve('dist');
+        const indexPath = path.join(distDir, 'index.html');
+        const notFoundPath = path.join(distDir, '404.html');
+        if (fs.existsSync(indexPath)) {
+          fs.copyFileSync(indexPath, notFoundPath);
+        }
+      } catch (err) {
+        console.warn('Could not generate 404.html fallback for GitHub Pages:', err);
+      }
+    },
+  };
+}
+
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss(), geminiApiPlugin()],
+    base: './',
+    plugins: [react(), tailwindcss(), geminiApiPlugin(), spaFallbackPlugin()],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': path.resolve('.'),
       },
     },
     server: {

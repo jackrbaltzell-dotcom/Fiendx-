@@ -323,10 +323,63 @@ function MainApp() {
   );
 }
 
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('FindX Runtime Error Boundary caught:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center p-6 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center font-black text-2xl mb-4 shadow-lg">
+            FX
+          </div>
+          <h1 className="text-2xl font-black mb-2">FindX - Recovery Console</h1>
+          <p className="text-xs text-slate-400 max-w-md mb-6 leading-relaxed">
+            The platform encountered a display issue. Tap reload to refresh your session.
+          </p>
+          <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-xs font-mono text-rose-400 max-w-lg mb-6 truncate">
+            {this.state.error?.message || 'Unknown error'}
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all active:scale-95"
+          >
+            Reload FindX
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 export default function App() {
   return (
-    <AuthProvider>
-      <MainApp />
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <MainApp />
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

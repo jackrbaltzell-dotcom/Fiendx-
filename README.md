@@ -77,6 +77,30 @@ npm run build
 
 ---
 
+## 🌐 Deploying to GitHub Pages
+
+### Why the page was blank and how it is fixed:
+By default, Vite builds assets with absolute paths (`/assets/...`). When deployed to GitHub Pages under a subfolder repository (`https://<username>.github.io/<repo-name>/`), the browser looks for `/assets/...` on the root domain (`https://<username>.github.io/assets/...`), which returns `404 Not Found`, causing a blank white page.
+
+1. **Relative Base URL**: We configured `base: './'` in `vite.config.ts`, so assets are referenced as `./assets/...`.
+2. **SPA Routing 404 Fallback**: `vite.config.ts` automatically generates `dist/404.html` so direct navigation and page reloads work smoothly on GitHub Pages.
+3. **Runtime Error Boundary**: Added an `ErrorBoundary` so any unforeseen exception displays a recovery console instead of a blank white screen.
+
+### Deployment Steps:
+1. Build the production files:
+   ```bash
+   npm run build
+   ```
+2. Deploy the generated `dist/` directory to your repository's `gh-pages` branch (or select `/dist` as the GitHub Pages root in repository Settings > Pages).
+3. **Firebase Auth on GitHub Pages**:
+   - Go to [Firebase Console](https://console.firebase.google.com/) > Your Project > **Authentication** > **Settings** > **Authorized domains**.
+   - Add `<your-username>.github.io` so Google Sign-in popups are authorized on your GitHub Pages domain.
+4. **Backend AI Features on GitHub Pages**:
+   - GitHub Pages only serves static files (HTML/CSS/JS).
+   - If you want the server-side Gemini AI features (Maps grounding, Search grounding, AI listing polish, etc.) to function on GitHub Pages, host your backend proxy (e.g., on Cloud Run, Render, or Railway) and set `VITE_API_URL="https://your-backend-service.run.app"` in your GitHub Pages build environment variables.
+
+---
+
 ## 🔒 Environment Variables
 
 Copy `.env.example` to `.env`:
