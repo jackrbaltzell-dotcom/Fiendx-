@@ -1,0 +1,6 @@
+{
+  "name": "FindX - Find Everything. Connect Everyone",
+  "description": "All-in-one discovery and connection platform combining interactive map, property, marketplace, services, jobs, freelancing, communities, real-time messaging, and Gemini intelligence.",
+  "requestFramePermissions": ["geolocation", "microphone", "camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
